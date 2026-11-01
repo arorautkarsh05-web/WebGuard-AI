@@ -7,6 +7,12 @@ export const api = axios.create({
   },
 });
 
+let unauthorizedHandler: (() => void) | null = null;
+
+export const setUnauthorizedHandler = (handler: () => void) => {
+  unauthorizedHandler = handler;
+};
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('webguard_token');
   if (token) {
@@ -18,7 +24,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('webguard_token');
+      localStorage.removeItem('webguard_user');
+      if (unauthorizedHandler) {
+        unauthorizedHandler();
+      }
+    }
     return Promise.reject(error);
   }
 );
-

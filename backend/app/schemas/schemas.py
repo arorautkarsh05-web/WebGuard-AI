@@ -10,6 +10,7 @@ class UserLogin(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+    confirm_password: Optional[str] = None
     full_name: Optional[str] = None
     organization_name: Optional[str] = "My Organization"
 

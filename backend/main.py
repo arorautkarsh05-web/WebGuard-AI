@@ -3,7 +3,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.core.config import settings
-from backend.app.core.database import Base, engine
+from backend.app.core.database import Base, engine, SessionLocal
+from backend.app.models.models import User, Organization
+from backend.app.core.security import get_password_hash
 from backend.app.api.v1 import (
     auth,
     websites,
@@ -18,6 +20,29 @@ from backend.app.api.v1 import (
 async def lifespan(app: FastAPI):
     # Initialize database tables
     Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    try:
+        user = db.query(User).first()
+        if not user:
+            org = Organization(name="Acme Enterprise", plan="enterprise")
+            db.add(org)
+            db.commit()
+            db.refresh(org)
+
+            admin_user = User(
+                organization_id=org.id,
+                email="admin@webguard.ai",
+                hashed_password=get_password_hash("WebGuardPass2026!"),
+                full_name="Security Admin",
+                role="admin",
+                is_active=True
+            )
+            db.add(admin_user)
+            db.commit()
+            print("[WebGuard AI] Default administrator account provisioned: admin@webguard.ai")
+    finally:
+        db.close()
+
     print(f"[WebGuard AI] Database initialized successfully.")
     yield
 
@@ -33,7 +58,7 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows frontend in dev or production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -67,4 +92,3 @@ def root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
-

@@ -2,15 +2,33 @@
 
 @layer base {
   :root {
-    --background: 220 25% 97%;
-    --foreground: 220 20% 10%;
+    --jet-black: #0B0B0F;
+    --royal-amethyst: #8B5CF6;
+    --electric-cyan: #00E5FF;
   }
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background-color: #0b0f19;
-  color: #f1f5f9;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #0B0B0F;
+  color: #FFFFFF;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar matching Jet Black & Royal Amethyst */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0B0F;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
 }

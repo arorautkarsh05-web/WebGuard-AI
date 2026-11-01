@@ -13,6 +13,18 @@ router = APIRouter()
 
 @router.post("/register", response_model=Token)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
+    if len(user_in.password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 6 characters long."
+        )
+
+    if user_in.confirm_password and user_in.password != user_in.confirm_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Passwords do not match."
+        )
+
     # Check if user already exists
     existing = db.query(User).filter(User.email == user_in.email).first()
     if existing:
@@ -54,7 +66,7 @@ def login(login_in: UserLogin, db: Session = Depends(get_db)):
     if not user or not verify_password(login_in.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password."
+            detail="Invalid email or password."
         )
     if not user.is_active:
         raise HTTPException(
@@ -73,3 +85,6 @@ def login(login_in: UserLogin, db: Session = Depends(get_db)):
 def get_current_user_profile(current_user: User = Depends(get_current_user)):
     return current_user
 
+@router.post("/logout")
+def logout(current_user: User = Depends(get_current_user)):
+    return {"message": "Logged out successfully."}
