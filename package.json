@@ -1,0 +1,11 @@
+{
+  "name": "webguard-ai-root",
+  "version": "2.0.0",
+  "private": true,
+  "description": "WebGuard AI Root Launcher",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint"
+  }
+}
