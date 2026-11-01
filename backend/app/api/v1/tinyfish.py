@@ -24,6 +24,7 @@ class FetchRequest(BaseModel):
 class AgentWorkflowRequest(BaseModel):
     url: str
     goal: str
+    mode: Optional[str] = "turbo"  # "turbo" (Fast synthetic test < 1.5s) | "deep" (Cloud Chromium browser agent)
 
 @router.get("/status")
 async def get_tinyfish_status():
@@ -86,12 +87,20 @@ async def run_agent_workflow(
     if not req.goal.strip():
         raise HTTPException(status_code=400, detail="Goal cannot be empty.")
 
-    res = await tinyfish_service.run_agent(
-        url=valid_url,
-        goal=req.goal,
-        db=db,
-        organization_id=current_user.organization_id
-    )
+    if getattr(req, "mode", "turbo") == "deep":
+        res = await tinyfish_service.run_agent(
+            url=valid_url,
+            goal=req.goal,
+            db=db,
+            organization_id=current_user.organization_id
+        )
+    else:
+        res = await tinyfish_service.fast_functional_test(
+            url=valid_url,
+            goal=req.goal,
+            db=db,
+            organization_id=current_user.organization_id
+        )
     return res
 
 @router.get("/executions", response_model=List[TinyFishExecutionOut])

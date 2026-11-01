@@ -179,11 +179,11 @@ class BackgroundScheduler:
                 for comp in competitors:
                     try:
                         await asyncio.wait_for(
-                            competitor_service.track_competitor(comp, db),
+                            competitor_service.scan_competitor(comp, db),
                             timeout=60.0
                         )
                     except Exception as comp_err:
-                        print(f"[Scheduler] Competitor tracking error: {comp_err}")
+                        print(f"[Scheduler] Competitor scan error: {comp_err}")
 
         finally:
             db.close()

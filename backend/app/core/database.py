@@ -8,11 +8,24 @@ from backend.app.core.config import settings
 db_url = settings.DATABASE_URL
 engine = None
 
+from sqlalchemy import event
+
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    try:
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.execute("PRAGMA busy_timeout=5000")
+        cursor.close()
+    except Exception:
+        pass
+
 if db_url.startswith("sqlite"):
     engine = create_engine(
         db_url,
-        connect_args={"check_same_thread": False}
+        connect_args={"check_same_thread": False, "timeout": 30.0}
     )
+    event.listen(engine, "connect", set_sqlite_pragma)
 else:
     # Production PostgreSQL with robust connection pooling
     try:
@@ -36,7 +49,8 @@ else:
             # Informative local development fallback
             fallback_url = "sqlite:///./webguard.db"
             print(f"[Database Notice] Could not connect to PostgreSQL ({e}). Using local SQLite for development: {fallback_url}")
-            engine = create_engine(fallback_url, connect_args={"check_same_thread": False})
+            engine = create_engine(fallback_url, connect_args={"check_same_thread": False, "timeout": 30.0})
+            event.listen(engine, "connect", set_sqlite_pragma)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
