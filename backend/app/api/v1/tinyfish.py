@@ -105,3 +105,4 @@ def get_executions(
         query = query.filter(TinyFishExecution.service_type == service_type)
     executions = query.order_by(TinyFishExecution.created_at.desc()).limit(50).all()
     return executions
+

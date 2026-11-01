@@ -357,3 +357,4 @@ export const CompetitorIntelligence: React.FC<CompetitorIntelProps> = ({
     </div>
   );
 };
+

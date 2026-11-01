@@ -229,3 +229,4 @@ class DashboardActivityItem(BaseModel):
     description: str
     severity: Optional[str] = None
     timestamp: datetime
+

@@ -142,3 +142,4 @@ class ChangeDetectorService:
         }
 
 change_detector = ChangeDetectorService()
+

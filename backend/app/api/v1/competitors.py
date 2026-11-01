@@ -149,3 +149,4 @@ async def trigger_competitor_scan(
 
     scan_res = await competitor_service.scan_competitor(competitor, db)
     return scan_res
+

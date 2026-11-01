@@ -119,3 +119,4 @@ export const MonitoringHistory: React.FC = () => {
     </div>
   );
 };
+

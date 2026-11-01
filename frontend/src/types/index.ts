@@ -116,3 +116,4 @@ export interface DashboardActivityItem {
   severity?: string;
   timestamp: string;
 }
+

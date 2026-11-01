@@ -139,3 +139,4 @@ def delete_website(
     db.delete(website)
     db.commit()
     return {"message": "Website deleted successfully."}
+

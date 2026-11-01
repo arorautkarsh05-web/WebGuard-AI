@@ -259,3 +259,4 @@ export const IncidentManagement: React.FC<IncidentManagementProps> = ({
     </div>
   );
 };
+

@@ -134,3 +134,4 @@ def get_task_results(
         .all()
     )
     return results
+

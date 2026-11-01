@@ -128,3 +128,4 @@ class CompetitorService:
         }
 
 competitor_service = CompetitorService()
+

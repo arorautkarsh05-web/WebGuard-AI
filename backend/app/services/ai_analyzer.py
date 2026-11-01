@@ -131,3 +131,4 @@ class AIIncidentAnalyzer:
         }
 
 ai_analyzer = AIIncidentAnalyzer()
+
