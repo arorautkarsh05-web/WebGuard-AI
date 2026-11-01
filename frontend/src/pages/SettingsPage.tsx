@@ -41,7 +41,7 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* TinyFish Integration Card */}
-      <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6 space-y-5 shadow-xl">
+      <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 space-y-5 shadow-xl">
         <div className="flex items-center justify-between pb-4 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-[#00E5FF]/10 text-[#00E5FF]">
@@ -57,7 +57,7 @@ export const SettingsPage: React.FC = () => {
             <button
               onClick={checkStatus}
               disabled={isPinging}
-              className="px-3 py-1.5 rounded-xl bg-[#0B0B0F] hover:bg-[#8B5CF6]/20 text-[#00E5FF] text-xs font-bold flex items-center gap-1.5 border border-[#00E5FF]/30 transition"
+              className="px-3 py-1.5 rounded-xl bg-[#0B0B0F]/70 hover:bg-[#8B5CF6]/20 text-[#00E5FF] text-xs font-bold flex items-center gap-1.5 border border-[#00E5FF]/30 transition"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isPinging ? 'animate-spin' : ''}`} />
               <span>Ping Status</span>
@@ -73,7 +73,7 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div className="p-4 bg-[#0B0B0F] rounded-xl border border-white/10 space-y-1">
+          <div className="p-4 bg-[#0B0B0F]/60 rounded-xl border border-white/10 space-y-1">
             <div className="text-white/40 font-bold uppercase tracking-wider text-[10px]">Credential Storage</div>
             <div className="text-white font-mono flex items-center gap-2 font-semibold">
               <Lock className="w-3.5 h-3.5 text-[#00E5FF]" />
@@ -82,19 +82,19 @@ export const SettingsPage: React.FC = () => {
             <div className="text-[11px] text-white/40">Credential value is never transmitted to the browser client.</div>
           </div>
 
-          <div className="p-4 bg-[#0B0B0F] rounded-xl border border-white/10 space-y-1">
+          <div className="p-4 bg-[#0B0B0F]/60 rounded-xl border border-white/10 space-y-1">
             <div className="text-white/40 font-bold uppercase tracking-wider text-[10px]">Search API Endpoint</div>
             <div className="text-[#00E5FF] font-mono font-semibold">{tinyfishStatus?.search_url || 'https://api.search.tinyfish.ai'}</div>
             <div className="text-[11px] text-white/40">Used for competitor & intelligence discovery.</div>
           </div>
 
-          <div className="p-4 bg-[#0B0B0F] rounded-xl border border-white/10 space-y-1">
+          <div className="p-4 bg-[#0B0B0F]/60 rounded-xl border border-white/10 space-y-1">
             <div className="text-white/40 font-bold uppercase tracking-wider text-[10px]">Fetch API Endpoint</div>
             <div className="text-[#00E5FF] font-mono font-semibold">{tinyfishStatus?.fetch_url || 'https://api.fetch.tinyfish.ai'}</div>
             <div className="text-[11px] text-white/40">Used for clean page snapshots and pricing extraction.</div>
           </div>
 
-          <div className="p-4 bg-[#0B0B0F] rounded-xl border border-white/10 space-y-1">
+          <div className="p-4 bg-[#0B0B0F]/60 rounded-xl border border-white/10 space-y-1">
             <div className="text-white/40 font-bold uppercase tracking-wider text-[10px]">Agent Automation Endpoint</div>
             <div className="text-[#00E5FF] font-mono font-semibold">{tinyfishStatus?.agent_url || 'https://agent.tinyfish.ai'}</div>
             <div className="text-[11px] text-white/40">Goal-based browser automation fleet.</div>
@@ -103,7 +103,7 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Security Policies Card */}
-      <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6 space-y-4 shadow-xl">
+      <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 space-y-4 shadow-xl">
         <div className="flex items-center gap-3 pb-4 border-b border-white/10">
           <div className="p-2.5 rounded-xl bg-[#8B5CF6]/10 text-[#8B5CF6]">
             <ShieldCheck className="w-5 h-5 text-[#00E5FF]" />

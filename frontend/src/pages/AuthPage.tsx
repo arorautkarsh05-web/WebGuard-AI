@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Eye, EyeOff, Lock, Mail, User, Building, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { api } from '../api/client';
+import { BackgroundVideo } from '../components/BackgroundVideo';
 
 interface AuthPageProps {
   onAuthSuccess: (token: string, user: any) => void;
@@ -74,16 +75,19 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0B0F] flex items-center justify-center p-4 relative overflow-hidden select-none">
-      {/* Subtle Electric Cyan & Royal Amethyst background ambient glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#8B5CF6]/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-1/4 w-[350px] h-[350px] bg-[#00E5FF]/5 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-transparent flex items-center justify-center p-4 relative overflow-hidden select-none">
+      {/* Dominant Background Animated Video Layer */}
+      <BackgroundVideo opacity={0.9} overlayOpacity={0.18} />
 
-      <div className="w-full max-w-md bg-[#0B0B0F] border border-[#8B5CF6]/20 rounded-2xl p-8 relative shadow-2xl backdrop-blur-xl">
+      {/* Subtle Electric Cyan & Royal Amethyst background ambient glows */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#8B5CF6]/15 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute bottom-10 right-1/4 w-[350px] h-[350px] bg-[#00E5FF]/10 rounded-full blur-[120px] pointer-events-none z-0" />
+
+      <div className="w-full max-w-md bg-[#0B0B0F]/75 border border-[#8B5CF6]/25 rounded-2xl p-8 relative z-10 shadow-2xl backdrop-blur-xl">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center mb-7">
-          <div className="w-12 h-12 rounded-2xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/30 flex items-center justify-center mb-3.5 shadow-lg shadow-[#8B5CF6]/10">
-            <ShieldCheck className="w-6 h-6 text-[#00E5FF]" />
+          <div className="w-16 h-16 rounded-2xl overflow-hidden border border-[#8B5CF6]/40 flex items-center justify-center mb-3.5 shadow-xl shadow-[#8B5CF6]/20 bg-[#0B0B0F]/90">
+            <img src="/webguard-logo.png" alt="WebGuard AI Logo" className="w-full h-full object-contain p-1" />
           </div>
           <h1 className="text-xl font-extrabold text-white tracking-tight flex items-center gap-1.5">
             WebGuard <span className="text-[#00E5FF]">AI</span>
@@ -282,3 +286,4 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
     </div>
   );
 };
+

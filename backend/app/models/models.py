@@ -34,6 +34,8 @@ class Organization(Base):
     incidents = relationship("Incident", back_populates="organization", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="organization", cascade="all, delete-orphan")
     tinyfish_executions = relationship("TinyFishExecution", back_populates="organization", cascade="all, delete-orphan")
+    ai_actions = relationship("AIAction", back_populates="organization", cascade="all, delete-orphan")
+    regression_tests = relationship("RegressionTest", back_populates="organization", cascade="all, delete-orphan")
 
 class User(Base):
     __tablename__ = "users"
@@ -203,4 +205,53 @@ class TinyFishExecution(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True)
 
     organization = relationship("Organization", back_populates="tinyfish_executions")
+
+class AIAction(Base):
+    __tablename__ = "ai_actions"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    incident_id = Column(String(36), ForeignKey("incidents.id", ondelete="SET NULL"), nullable=True, index=True)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    action_type = Column(String(50), nullable=False)  # remediation_plan, notify_team, schedule_verification, developer_ticket, competitor_brief
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=False)
+    risk_level = Column(String(20), default="LOW", nullable=False)
+    parameters = Column(JSON, default=dict)
+    approval_status = Column(String(50), default="pending_approval", nullable=False)  # pending_approval, approved, rejected, executed
+    execution_status = Column(String(50), default="pending", nullable=False)  # pending, running, completed, failed
+    execution_result = Column(JSON, default=dict)
+    verification_status = Column(String(50), default="pending", nullable=False)  # pending, verified_resolved, still_failing, inconclusive
+    verification_details = Column(JSON, default=dict)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True)
+    approved_at = Column(DateTime(timezone=True), nullable=True)
+    executed_at = Column(DateTime(timezone=True), nullable=True)
+    verified_at = Column(DateTime(timezone=True), nullable=True)
+
+    organization = relationship("Organization", back_populates="ai_actions")
+    incident = relationship("Incident")
+    user = relationship("User")
+
+class RegressionTest(Base):
+    __tablename__ = "regression_tests"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    website_id = Column(String(36), ForeignKey("websites.id", ondelete="CASCADE"), nullable=True, index=True)
+    name = Column(String(255), nullable=False)
+    objective = Column(Text, nullable=False)  # Reusable synthetic goal, e.g. "Test user login flow"
+    target_url = Column(String(1024), nullable=False)
+    frequency_minutes = Column(Integer, default=60, nullable=False)
+    status = Column(String(50), default="active", nullable=False)  # active, paused
+    last_run_status = Column(String(50), default="pending", nullable=False)  # passed, failed, inconclusive, unavailable, pending
+    last_run_at = Column(DateTime(timezone=True), nullable=True)
+    last_duration_ms = Column(Float, nullable=True)
+    failed_step = Column(Text, nullable=True)
+    evidence = Column(JSON, default=dict)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    organization = relationship("Organization", back_populates="regression_tests")
+    website = relationship("Website")
+
 

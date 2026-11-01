@@ -60,7 +60,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
     <div className="space-y-6">
       {/* Critical Alert Banner if critical incidents exist */}
       {overview && overview.critical_incidents > 0 && (
-        <div className="bg-[#0B0B0F] border border-[#8B5CF6]/40 rounded-2xl p-4 flex items-center justify-between shadow-xl">
+        <div className="bg-[#0B0B0F]/75 backdrop-blur-md border border-[#8B5CF6]/40 rounded-2xl p-4 flex items-center justify-between shadow-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-[#8B5CF6]/20 text-[#00E5FF]">
               <ShieldAlert className="w-5 h-5 animate-pulse" />
@@ -86,7 +86,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Global Health & Uptime */}
-        <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-5 relative overflow-hidden">
+        <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 hover:border-[#00E5FF]/40 rounded-2xl p-5 relative overflow-hidden shadow-xl transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-white/50 uppercase tracking-wider">Global Fleet Uptime</span>
             <div className="p-2 rounded-xl bg-[#00E5FF]/10 text-[#00E5FF]">
@@ -118,11 +118,11 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
         {/* Card 2: Monitored Websites */}
         <div
           onClick={() => onNavigate('websites')}
-          className="bg-[#0B0B0F] border border-[#8B5CF6]/15 hover:border-[#8B5CF6]/40 rounded-2xl p-5 cursor-pointer transition group"
+          className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 hover:border-[#8B5CF6]/50 rounded-2xl p-5 cursor-pointer transition shadow-xl group"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-white/50 uppercase tracking-wider">Monitored Websites</span>
-            <div className="p-2 rounded-xl bg-[#8B5CF6]/10 text-[#8B5CF6] group-hover:bg-[#8B5CF6] group-hover:text-white transition">
+            <div className="p-2 rounded-xl bg-[#8B5CF6]/15 text-[#8B5CF6] group-hover:bg-[#8B5CF6] group-hover:text-white transition">
               <Globe className="w-4 h-4" />
             </div>
           </div>
@@ -140,7 +140,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
         {/* Card 3: Competitors Tracked */}
         <div
           onClick={() => onNavigate('competitors')}
-          className="bg-[#0B0B0F] border border-[#8B5CF6]/15 hover:border-[#8B5CF6]/40 rounded-2xl p-5 cursor-pointer transition group"
+          className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 hover:border-[#00E5FF]/50 rounded-2xl p-5 cursor-pointer transition shadow-xl group"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-white/50 uppercase tracking-wider">Competitors Monitored</span>
@@ -160,7 +160,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
         </div>
 
         {/* Card 4: Average Response Time */}
-        <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-5">
+        <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 hover:border-[#8B5CF6]/50 rounded-2xl p-5 shadow-xl transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-white/50 uppercase tracking-wider">Average Latency</span>
             <div className="p-2 rounded-xl bg-[#8B5CF6]/10 text-[#8B5CF6]">
@@ -182,13 +182,13 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chart 1: Latency Distribution */}
-        <div className="lg:col-span-2 bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6">
+        <div className="lg:col-span-2 bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-xl">
           <div className="flex items-center justify-between mb-5">
             <div>
               <h3 className="text-sm font-extrabold text-white">Endpoint Response Latencies</h3>
               <p className="text-xs text-white/50">Roundtrip latency benchmark (ms) across monitored targets</p>
             </div>
-            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#8B5CF6]/15 text-[#00E5FF] border border-[#00E5FF]/30">
+            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#8B5CF6]/20 text-[#00E5FF] border border-[#00E5FF]/30">
               Live Polling
             </span>
           </div>
@@ -197,21 +197,21 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
               <AreaChart data={latencyData}>
                 <defs>
                   <linearGradient id="amethystGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.4} />
+                    <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.6} />
                     <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="name" stroke="rgba(255, 255, 255, 0.3)" fontSize={11} />
-                <YAxis stroke="rgba(255, 255, 255, 0.3)" fontSize={11} unit="ms" />
+                <XAxis dataKey="name" stroke="rgba(255, 255, 255, 0.4)" fontSize={11} />
+                <YAxis stroke="rgba(255, 255, 255, 0.4)" fontSize={11} unit="ms" />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0B0B0F', borderColor: 'rgba(139, 92, 246, 0.3)', borderRadius: '12px' }}
+                  contentStyle={{ backgroundColor: 'rgba(11, 11, 15, 0.9)', borderColor: 'rgba(139, 92, 246, 0.4)', borderRadius: '12px', backdropFilter: 'blur(8px)' }}
                   labelStyle={{ color: '#FFFFFF' }}
                   itemStyle={{ color: '#00E5FF' }}
                 />
                 <Area
                   type="monotone"
                   dataKey="latency"
-                  stroke="#8B5CF6"
+                  stroke="#00E5FF"
                   strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#amethystGradient)"
@@ -222,7 +222,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
         </div>
 
         {/* Chart 2: Fleet Status Distribution */}
-        <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6 flex flex-col justify-between">
+        <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
           <div>
             <h3 className="text-sm font-extrabold text-white mb-1">Fleet Health Breakdown</h3>
             <p className="text-xs text-white/50 mb-5">Current health state classification</p>
@@ -254,7 +254,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
       {/* Two Column Section: Live Incidents & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Incidents Feed */}
-        <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6">
+        <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-[#8B5CF6]" />
@@ -279,13 +279,13 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
                 <div
                   key={inc.id}
                   onClick={() => onNavigate('incidents')}
-                  className="p-3.5 bg-[#0B0B0F] hover:bg-[#8B5CF6]/10 rounded-xl border border-[#8B5CF6]/20 cursor-pointer transition flex items-start justify-between gap-3"
+                  className="p-3.5 bg-[#0B0B0F]/60 hover:bg-[#8B5CF6]/15 rounded-xl border border-[#8B5CF6]/20 cursor-pointer transition flex items-start justify-between gap-3 shadow-sm"
                 >
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase ${
                         inc.severity === 'Critical'
-                          ? 'bg-[#8B5CF6] text-white'
+                          ? 'bg-[#8B5CF6] text-white shadow-sm'
                           : 'bg-[#8B5CF6]/20 text-[#00E5FF] border border-[#00E5FF]/30'
                       }`}>
                         {inc.severity}
@@ -304,13 +304,13 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
         </div>
 
         {/* Activity Stream */}
-        <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6">
+        <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-[#00E5FF]" />
               <h3 className="text-sm font-extrabold text-white">Live Monitoring Stream</h3>
             </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#00E5FF]/10 text-[#00E5FF]">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/30">
               Real-time
             </span>
           </div>
@@ -322,7 +322,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
               </div>
             ) : (
               activities.slice(0, 5).map((act) => (
-                <div key={act.id} className="flex items-start gap-3 p-3 rounded-xl bg-[#0B0B0F] border border-white/5">
+                <div key={act.id} className="flex items-start gap-3 p-3 rounded-xl bg-[#0B0B0F]/60 border border-white/5">
                   <div className="mt-1 w-2 h-2 rounded-full bg-[#00E5FF] shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-semibold text-white">{act.title}</div>

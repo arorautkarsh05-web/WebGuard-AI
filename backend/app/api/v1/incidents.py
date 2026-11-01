@@ -7,6 +7,7 @@ from backend.app.core.database import get_db
 from backend.app.models.models import Incident, User
 from backend.app.schemas.schemas import IncidentOut, IncidentStatusUpdate
 from backend.app.api.deps import get_current_user
+from backend.app.services.investigation_service import investigation_service
 
 router = APIRouter()
 
@@ -68,4 +69,30 @@ def update_incident_status(
     db.commit()
     db.refresh(incident)
     return incident
+
+@router.post("/{incident_id}/investigate")
+async def trigger_autonomous_investigation(
+    incident_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Flagship Feature: Triggers autonomous root cause investigation on the specified incident.
+    Synthesizes multi-module evidence and produces a verified, structured investigation report.
+    """
+    incident = (
+        db.query(Incident)
+        .filter(Incident.id == incident_id, Incident.organization_id == current_user.organization_id)
+        .first()
+    )
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found.")
+
+    report = await investigation_service.investigate_incident(incident, db, current_user=current_user)
+    return {
+        "success": True,
+        "incident_id": incident.id,
+        "investigation_report": report
+    }
+
 

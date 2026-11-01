@@ -59,11 +59,11 @@ export const FunctionalTesting: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6">
+      <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-[#8B5CF6]/10 text-[#8B5CF6]">
+              <div className="p-2 rounded-xl bg-[#8B5CF6]/15 text-[#8B5CF6]">
                 <Bot className="w-5 h-5 text-[#00E5FF]" />
               </div>
               <h3 className="text-base font-extrabold text-white">
@@ -75,7 +75,7 @@ export const FunctionalTesting: React.FC = () => {
             </p>
           </div>
 
-          <div className="px-4 py-2 bg-[#0B0B0F] border border-[#00E5FF]/30 rounded-xl text-[#00E5FF] text-xs flex items-center gap-2 self-start sm:self-auto">
+          <div className="px-4 py-2 bg-[#0B0B0F]/60 backdrop-blur-md border border-[#00E5FF]/30 rounded-xl text-[#00E5FF] text-xs flex items-center gap-2 self-start sm:self-auto shadow-md">
             <ShieldCheck className="w-4 h-4 text-[#00E5FF] shrink-0" />
             <div>
               <div className="font-extrabold text-[11px] text-white">Safety Policy Active</div>
@@ -95,7 +95,7 @@ export const FunctionalTesting: React.FC = () => {
             <div
               key={idx}
               onClick={() => setGoal(preset.goal)}
-              className="p-4 bg-[#0B0B0F] hover:bg-[#8B5CF6]/10 border border-[#8B5CF6]/15 hover:border-[#8B5CF6]/40 rounded-2xl cursor-pointer transition group"
+              className="p-4 bg-[#0B0B0F]/70 backdrop-blur-md hover:bg-[#8B5CF6]/15 border border-[#8B5CF6]/20 hover:border-[#00E5FF]/40 rounded-2xl cursor-pointer transition shadow-lg group"
             >
               <div className="text-xs font-bold text-white group-hover:text-[#00E5FF] flex items-center justify-between">
                 <span>{preset.title}</span>
@@ -110,7 +110,7 @@ export const FunctionalTesting: React.FC = () => {
       {/* Execution Setup & Live Console */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Form Setup */}
-        <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6 space-y-4">
+        <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 space-y-4 shadow-xl">
           <h4 className="text-sm font-extrabold text-white flex items-center gap-2">
             <Layers className="w-4 h-4 text-[#8B5CF6]" /> Automation Parameters
           </h4>
@@ -124,7 +124,7 @@ export const FunctionalTesting: React.FC = () => {
                 value={targetUrl}
                 onChange={(e) => setTargetUrl(e.target.value)}
                 placeholder="https://example.com"
-                className="w-full px-3.5 py-2.5 bg-[#0B0B0F] border border-white/10 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#8B5CF6]"
+                className="w-full px-3.5 py-2.5 bg-[#0B0B0F]/70 border border-[#8B5CF6]/25 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#00E5FF] transition"
               />
             </div>
 
@@ -138,7 +138,7 @@ export const FunctionalTesting: React.FC = () => {
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
                 placeholder="Describe what the browser agent should test and verify..."
-                className="w-full px-3.5 py-2.5 bg-[#0B0B0F] border border-white/10 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#8B5CF6]"
+                className="w-full px-3.5 py-2.5 bg-[#0B0B0F]/70 border border-[#8B5CF6]/25 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#00E5FF] transition"
               />
               <p className="text-[10px] text-white/40 mt-1">
                 TinyFish Agent interprets this goal, spawns cloud browser sessions, and executes steps.
@@ -166,7 +166,7 @@ export const FunctionalTesting: React.FC = () => {
         </div>
 
         {/* Right Column: Results & Step Log */}
-        <div className="lg:col-span-2 bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6 flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
               <h4 className="text-sm font-extrabold text-white">

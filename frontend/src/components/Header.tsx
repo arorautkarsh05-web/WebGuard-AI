@@ -23,15 +23,35 @@ export const Header: React.FC<HeaderProps> = ({
   onLogout,
 }) => {
   return (
-    <header className="h-16 border-b border-[#8B5CF6]/15 bg-[#0B0B0F]/90 backdrop-blur-xl sticky top-0 z-20 px-8 flex items-center justify-between select-none">
-      <div>
-        <h2 className="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
-          {title}
-        </h2>
-        <p className="text-xs text-white/50">{subtitle}</p>
+    <header className="h-16 border-b border-[#8B5CF6]/20 bg-[#0B0B0F]/75 backdrop-blur-xl sticky top-0 z-20 px-8 flex items-center justify-between select-none">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg overflow-hidden border border-[#8B5CF6]/30 shadow-md shadow-[#8B5CF6]/20 bg-[#0B0B0F]/80 md:hidden">
+          <img src="/webguard-logo.png" alt="WebGuard AI" className="w-full h-full object-cover" />
+        </div>
+        <div>
+          <h2 className="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+            {title}
+          </h2>
+          <p className="text-xs text-white/50">{subtitle}</p>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Project Brand Search / Quick Filter Bar */}
+        <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#0B0B0F]/60 border border-[#8B5CF6]/25 focus-within:border-[#00E5FF] transition w-80 shadow-inner">
+          <div className="w-5 h-5 rounded-md overflow-hidden shrink-0 border border-[#8B5CF6]/40">
+            <img src="/webguard-logo.png" alt="WebGuard AI Logo" className="w-full h-full object-cover" />
+          </div>
+          <span className="text-[11px] font-extrabold text-white tracking-tight shrink-0">
+            WebGuard <span className="text-[#00E5FF]">AI</span>
+          </span>
+          <span className="text-white/20">|</span>
+          <input
+            type="text"
+            placeholder="Quick search endpoints, incidents..."
+            className="bg-transparent text-xs text-white placeholder-white/30 focus:outline-none w-full"
+          />
+        </div>
         {onRefresh && (
           <button
             onClick={onRefresh}

@@ -97,10 +97,10 @@ export const CompetitorIntelligence: React.FC<CompetitorIntelProps> = ({
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-[#8B5CF6]/10 text-[#8B5CF6]">
+            <div className="p-2 rounded-xl bg-[#8B5CF6]/15 text-[#8B5CF6]">
               <TrendingUp className="w-5 h-5 text-[#00E5FF]" />
             </div>
             <h3 className="text-base font-extrabold text-white">Competitor & Market Intelligence</h3>
@@ -119,7 +119,7 @@ export const CompetitorIntelligence: React.FC<CompetitorIntelProps> = ({
       </div>
 
       {/* TinyFish Competitor Search / Discovery Tool */}
-      <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6">
+      <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-xl">
         <div className="flex items-center gap-2 mb-3">
           <Sparkles className="w-4 h-4 text-[#00E5FF]" />
           <h4 className="text-xs font-extrabold uppercase tracking-wider text-white/70">
@@ -134,7 +134,7 @@ export const CompetitorIntelligence: React.FC<CompetitorIntelProps> = ({
               value={discoveryQuery}
               onChange={(e) => setDiscoveryQuery(e.target.value)}
               placeholder="Search industry or product (e.g. 'SaaS uptime monitoring', 'cloud database')..."
-              className="w-full pl-10 pr-3 py-2.5 bg-[#0B0B0F] border border-white/10 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#8B5CF6]"
+              className="w-full pl-10 pr-3 py-2.5 bg-[#0B0B0F]/70 border border-[#8B5CF6]/25 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#00E5FF] transition"
             />
           </div>
           <button
@@ -179,7 +179,7 @@ export const CompetitorIntelligence: React.FC<CompetitorIntelProps> = ({
       </div>
 
       {/* Historical Price Comparison Chart */}
-      <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6">
+      <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h4 className="text-sm font-extrabold text-white">Market Price Benchmark & Fluctuations</h4>
@@ -192,10 +192,10 @@ export const CompetitorIntelligence: React.FC<CompetitorIntelProps> = ({
         <div className="h-56 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={priceTrendData}>
-              <XAxis dataKey="date" stroke="rgba(255, 255, 255, 0.3)" fontSize={11} />
-              <YAxis stroke="rgba(255, 255, 255, 0.3)" fontSize={11} unit="$" />
+              <XAxis dataKey="date" stroke="rgba(255, 255, 255, 0.4)" fontSize={11} />
+              <YAxis stroke="rgba(255, 255, 255, 0.4)" fontSize={11} unit="$" />
               <Tooltip
-                contentStyle={{ backgroundColor: '#0B0B0F', borderColor: 'rgba(139, 92, 246, 0.3)', borderRadius: '12px' }}
+                contentStyle={{ backgroundColor: 'rgba(11, 11, 15, 0.9)', borderColor: 'rgba(139, 92, 246, 0.4)', borderRadius: '12px', backdropFilter: 'blur(8px)' }}
               />
               <Line type="monotone" dataKey="yourPrice" name="Your Price" stroke="#8B5CF6" strokeWidth={2.5} />
               <Line type="monotone" dataKey="competitorA" name="Competitor Alpha" stroke="#00E5FF" strokeWidth={2} strokeDasharray="3 3" />
@@ -210,13 +210,13 @@ export const CompetitorIntelligence: React.FC<CompetitorIntelProps> = ({
         <h4 className="text-sm font-extrabold text-white">Monitored Competitors ({competitors.length})</h4>
 
         {competitors.length === 0 ? (
-          <div className="p-12 text-center bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl text-white/40 text-xs">
+          <div className="p-12 text-center bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl text-white/40 text-xs shadow-xl">
             No competitors currently registered. Add a competitor to track their prices automatically.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {competitors.map((comp) => (
-              <div key={comp.id} className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6 space-y-4 shadow-xl">
+              <div key={comp.id} className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 hover:border-[#00E5FF]/40 rounded-2xl p-6 space-y-4 shadow-xl transition-all">
                 <div className="flex items-start justify-between">
                   <div>
                     <h5 className="text-sm font-extrabold text-white">{comp.name}</h5>

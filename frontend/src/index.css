@@ -17,18 +17,56 @@ body {
   overflow-x: hidden;
 }
 
+/* Glassmorphism styling tailored to WebGuard AI 3-brand-color system */
+.webguard-card {
+  background-color: rgba(11, 11, 15, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+  border-radius: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.webguard-card:hover {
+  border-color: rgba(0, 229, 255, 0.35);
+  box-shadow: 0 10px 36px 0 rgba(0, 229, 255, 0.1);
+}
+
+.webguard-panel {
+  background-color: rgba(11, 11, 15, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.55);
+  border-radius: 1rem;
+}
+
+.webguard-input {
+  background-color: rgba(11, 11, 15, 0.65);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  color: #FFFFFF;
+}
+
+.webguard-input:focus {
+  border-color: #00E5FF;
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.25);
+  outline: none;
+}
+
 /* Custom scrollbar matching Jet Black & Royal Amethyst */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B0B0F;
+  background: rgba(11, 11, 15, 0.8);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.35);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.6);
+  background: rgba(0, 229, 255, 0.6);
 }

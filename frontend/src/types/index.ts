@@ -117,3 +117,43 @@ export interface DashboardActivityItem {
   timestamp: string;
 }
 
+export interface AIAction {
+  id: string;
+  organization_id: string;
+  incident_id?: string;
+  user_id?: string;
+  action_type: string;
+  title: string;
+  description: string;
+  risk_level?: 'LOW' | 'MEDIUM' | 'HIGH';
+  parameters?: Record<string, any>;
+  approval_status: 'pending_approval' | 'approved' | 'rejected' | 'executed';
+  execution_status: 'pending' | 'running' | 'completed' | 'failed';
+  execution_result?: Record<string, any>;
+  verification_status: 'pending' | 'verified_resolved' | 'still_failing' | 'inconclusive';
+  verification_details?: Record<string, any>;
+  created_at: string;
+  approved_at?: string;
+  executed_at?: string;
+  verified_at?: string;
+}
+
+export interface RegressionTest {
+  id: string;
+  organization_id: string;
+  website_id?: string;
+  name: string;
+  objective: string;
+  target_url: string;
+  frequency_minutes: number;
+  status: 'active' | 'paused';
+  last_run_status: 'passed' | 'failed' | 'inconclusive' | 'unavailable' | 'pending';
+  last_run_at?: string;
+  last_duration_ms?: number;
+  failed_step?: string;
+  evidence?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+

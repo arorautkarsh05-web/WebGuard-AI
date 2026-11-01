@@ -35,17 +35,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'competitors', label: 'Competitor Intel', icon: TrendingUp, badge: 'Search' },
     { id: 'changes', label: 'Change Detection', icon: FileDiff, badge: 'Fetch' },
     { id: 'incidents', label: 'Incident Intel', icon: AlertTriangle },
+    { id: 'actions', label: 'AI Action Center', icon: ShieldCheck, badge: 'Gate' },
     { id: 'history', label: 'Audit & Executions', icon: History },
     { id: 'settings', label: 'Settings & Security', icon: Settings },
   ];
 
   return (
-    <aside className="w-64 bg-[#0B0B0F] border-r border-[#8B5CF6]/15 flex flex-col justify-between h-screen fixed left-0 top-0 select-none z-30">
+    <aside className="w-64 bg-[#0B0B0F]/85 backdrop-blur-xl border-r border-[#8B5CF6]/20 flex flex-col justify-between h-screen fixed left-0 top-0 select-none z-30">
       <div>
         {/* Brand Header */}
         <div className="p-5 flex items-center gap-3 border-b border-[#8B5CF6]/15">
-          <div className="w-9 h-9 rounded-xl bg-[#8B5CF6]/15 border border-[#8B5CF6]/30 flex items-center justify-center shadow-lg shadow-[#8B5CF6]/10">
-            <ShieldCheck className="w-5 h-5 text-[#00E5FF]" />
+          <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#8B5CF6]/40 flex items-center justify-center shadow-lg shadow-[#8B5CF6]/20 bg-[#0B0B0F]/80">
+            <img src="/webguard-logo.png" alt="WebGuard AI Logo" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="font-extrabold text-white text-base tracking-wide flex items-center gap-1.5">
@@ -105,7 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User Session & Logout Footer */}
-      <div className="p-4 border-t border-[#8B5CF6]/15 bg-[#0B0B0F]">
+      <div className="p-4 border-t border-[#8B5CF6]/15 bg-transparent">
         <div className="flex items-center justify-between mb-3 px-1">
           <div className="min-w-0">
             <div className="text-xs font-bold text-white truncate">{user?.full_name || 'Enterprise Admin'}</div>

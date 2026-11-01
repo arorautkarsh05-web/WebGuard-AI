@@ -4,7 +4,7 @@ from typing import Dict, Any, Optional
 import httpx
 from sqlalchemy.orm import Session
 
-from backend.app.core.security import validate_target_url
+from backend.app.core.security import validate_target_url, create_ssrf_safe_client
 from backend.app.models.models import Website, MonitoringTask, MonitoringResult, Incident
 
 class HealthMonitorService:
@@ -37,8 +37,8 @@ class HealthMonitorService:
         start_time = time.time()
         redirect_history = []
         try:
-            async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
-                response = await client.get(url, headers={"User-Agent": "WebGuard-AI/2.0 HealthBot"})
+            async with create_ssrf_safe_client(timeout=15.0) as client:
+                response = await client.get(url)
                 elapsed_ms = (time.time() - start_time) * 1000
 
                 for r in response.history:

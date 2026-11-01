@@ -12,6 +12,88 @@ class ChangeDetectorService:
     def _compute_hash(text: str) -> str:
         return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
+    @staticmethod
+    def _classify_change(diff_text: str, prev_content: str, current_content: str) -> Dict[str, Any]:
+        """
+        Classifies detected modifications into semantic tiers:
+        - Informational: Minor wording, copyright year, whitespace
+        - Minor: Non-critical headline or marketing tagline update
+        - Moderate: Layout changes, new section, modified navigation
+        - High: Pricing adjustments, login/signup form changes, unexpected redirects
+        - Critical: Checkout errors, gateway failures, or missing primary call-to-action
+        """
+        diff_lower = diff_text.lower()
+        curr_lower = current_content.lower()
+        prev_lower = prev_content.lower()
+
+        # Critical indicators
+        critical_keywords = [
+            "payment failed", "checkout error", "internal server error",
+            "database connection", "service unavailable", "exception occurred"
+        ]
+        if any(kw in diff_lower for kw in critical_keywords) and not any(kw in prev_lower for kw in critical_keywords):
+            return {
+                "classification": "Critical",
+                "severity": "Critical",
+                "summary": "Critical system failure or broken transaction flow detected on live webpage.",
+                "confidence": 0.95,
+                "create_incident": True
+            }
+
+        # High indicators (Pricing or Auth)
+        pricing_keywords = ["$", "€", "£", "usd", "eur", "price", "pricing", "per month", "per year", "annual billing", "/mo"]
+        auth_keywords = ["login", "sign in", "password", "authentication", "sso", "saml", "register", "sign up"]
+
+        has_pricing = any(kw in diff_lower for kw in pricing_keywords)
+        has_auth = any(kw in diff_lower for kw in auth_keywords)
+
+        if has_pricing:
+            return {
+                "classification": "High",
+                "severity": "High",
+                "summary": "Commercial modification: pricing tier, discount, or subscription structure altered.",
+                "confidence": 0.90,
+                "create_incident": True
+            }
+        elif has_auth:
+            return {
+                "classification": "High",
+                "severity": "High",
+                "summary": "Security & access modification: authentication or signup entry point modified.",
+                "confidence": 0.88,
+                "create_incident": True
+            }
+
+        # Moderate indicators (Structural/Section additions)
+        diff_lines = [l for l in diff_text.splitlines() if l.startswith('+') or l.startswith('-')]
+        if len(diff_lines) > 25:
+            return {
+                "classification": "Moderate",
+                "severity": "Medium",
+                "summary": f"Structural layout modification: {len(diff_lines)} lines added/removed.",
+                "confidence": 0.82,
+                "create_incident": True
+            }
+
+        # Minor indicators
+        if len(diff_lines) > 5:
+            return {
+                "classification": "Minor",
+                "severity": "Low",
+                "summary": "Minor content or copy revision detected on webpage.",
+                "confidence": 0.75,
+                "create_incident": False  # Do not generate incidents for routine copy updates
+            }
+
+        # Informational indicators
+        return {
+            "classification": "Informational",
+            "severity": "Low",
+            "summary": "Negligible wording or whitespace adjustment.",
+            "confidence": 0.70,
+            "create_incident": False
+        }
+
     async def detect_changes(
         self,
         task: MonitoringTask,
@@ -19,7 +101,8 @@ class ChangeDetectorService:
     ) -> Dict[str, Any]:
         """
         Extracts webpage content using TinyFish Fetch, stores snapshot,
-        compares against previous snapshot, and generates incidents if critical changes are detected.
+        compares against previous snapshot using semantic classification,
+        suppresses noise, and creates incidents only for High/Critical changes.
         """
         url = task.target_url
         fetch_res = await tinyfish_service.fetch(url=url, db=db, organization_id=task.organization_id)
@@ -42,9 +125,14 @@ class ChangeDetectorService:
         )
 
         has_changed = False
-        change_summary = []
-        change_type = "none"
         diff_text = ""
+        analysis = {
+            "classification": "None",
+            "severity": "Low",
+            "summary": "Baseline snapshot established.",
+            "confidence": 1.0,
+            "create_incident": False
+        }
 
         if previous_result and previous_result.data and "content_hash" in previous_result.data:
             prev_hash = previous_result.data["content_hash"]
@@ -53,93 +141,75 @@ class ChangeDetectorService:
             if prev_hash != current_hash:
                 has_changed = True
                 
-                # Compute text diff
+                # Compute unified text diff
                 diff_lines = list(difflib.unified_diff(
                     prev_content.splitlines(),
                     current_content.splitlines(),
-                    fromfile="previous_snapshot",
+                    fromfile="baseline_snapshot",
                     tofile="current_snapshot",
                     n=2
                 ))
-                diff_text = "\n".join(diff_lines[:50])
+                diff_text = "\n".join(diff_lines[:60])
 
-                # Classify change
-                prev_lower = prev_content.lower()
-                curr_lower = current_content.lower()
+                # Run Semantic Classification
+                analysis = self._classify_change(diff_text, prev_content, current_content)
 
-                # Check for pricing or discount indicators
-                price_keywords = ["$", "€", "£", "price", "plan", "month", "year", "tier", "billing", "discount", "free"]
-                has_pricing_keywords = any(kw in diff_text.lower() for kw in price_keywords)
-                
-                if has_pricing_keywords:
-                    change_type = "pricing_change"
-                    change_summary.append("Detected pricing, plan, or subscription tier adjustments on the webpage.")
-                elif "error" in curr_lower and "error" not in prev_lower:
-                    change_type = "error_content_introduced"
-                    change_summary.append("Error messages or broken components detected in rendered page content.")
-                else:
-                    change_type = "content_updated"
-                    change_summary.append(f"Content modification detected ({len(diff_lines)} changed lines).")
+                # Suppress duplicate noise: only generate incident if create_incident is True
+                if analysis["create_incident"]:
+                    incident = Incident(
+                        organization_id=task.organization_id,
+                        website_id=task.website_id,
+                        task_id=task.id,
+                        title=f"Page Change ({analysis['classification']}): {task.name}",
+                        severity=analysis["severity"],
+                        status="Open",
+                        root_cause_summary=analysis["summary"],
+                        evidence={
+                            "target_url": url,
+                            "change_classification": analysis["classification"],
+                            "confidence": analysis["confidence"],
+                            "diff_snippet": diff_text[:1200],
+                            "changed_at": datetime.now(timezone.utc).isoformat()
+                        },
+                        recommended_actions=[
+                            "Review content differential against scheduled CMS publications",
+                            "Verify that critical call-to-actions and conversion funnels remain functional"
+                        ]
+                    )
+                    db.add(incident)
 
-                # Generate incident if meaningful change detected
-                severity = "Medium" if change_type == "pricing_change" else "Low"
-                if change_type == "error_content_introduced":
-                    severity = "High"
+        # Store MonitoringResult with full snapshot data
+        result_payload = {
+            "content_hash": current_hash,
+            "content": current_content,
+            "content_length": len(current_content),
+            "has_changed": has_changed,
+            "classification": analysis["classification"],
+            "summary": analysis["summary"],
+            "diff": diff_text,
+            "fetch_source": "tinyfish_fetch" if not fetch_res.get("fallback") else "http_fallback"
+        }
 
-                incident = Incident(
-                    organization_id=task.organization_id,
-                    website_id=task.website_id,
-                    task_id=task.id,
-                    title=f"Page Change: {task.name} ({change_type})",
-                    severity=severity,
-                    status="Open",
-                    root_cause_summary="Automated content comparison detected structural or textual changes on the target webpage.",
-                    evidence={
-                        "target_url": url,
-                        "change_type": change_type,
-                        "diff_snippet": diff_text[:1000],
-                        "previous_hash": prev_hash,
-                        "current_hash": current_hash
-                    },
-                    recommended_actions=[
-                        "Review recent marketing or pricing releases",
-                        "Verify whether changes were authorized",
-                        "Ensure CTA links and checkout flows remain intact"
-                    ]
-                )
-                db.add(incident)
-        else:
-            change_summary.append("Initial baseline snapshot captured successfully.")
-            change_type = "initial_snapshot"
-
-        # Store monitoring result with snapshot data
-        result_record = MonitoringResult(
+        task_result = MonitoringResult(
             task_id=task.id,
             website_id=task.website_id,
             status="success",
-            response_time_ms=fetch_res.get("latency_ms", 0),
+            response_time_ms=fetch_res.get("latency_ms", 150),
             http_status_code=200,
-            data={
-                "content_hash": current_hash,
-                "content": current_content[:10000],  # Store truncated snapshot to preserve storage
-                "has_changed": has_changed,
-                "change_type": change_type,
-                "change_summary": change_summary,
-                "diff_snippet": diff_text[:500] if diff_text else None
-            }
+            data=result_payload
         )
-        db.add(result_record)
         task.last_run_at = datetime.now(timezone.utc)
+        db.add(task_result)
         db.commit()
-        db.refresh(result_record)
 
         return {
             "success": True,
             "has_changed": has_changed,
-            "change_type": change_type,
-            "change_summary": change_summary,
-            "diff": diff_text
+            "change_type": analysis["classification"],
+            "change_summary": [analysis["summary"]],
+            "diff": diff_text,
+            "content_length": len(current_content),
+            "confidence": analysis["confidence"]
         }
 
 change_detector = ChangeDetectorService()
-

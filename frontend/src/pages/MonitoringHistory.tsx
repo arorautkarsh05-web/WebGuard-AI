@@ -32,10 +32,10 @@ export const MonitoringHistory: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-[#8B5CF6]/10 text-[#8B5CF6]">
+            <div className="p-2 rounded-xl bg-[#8B5CF6]/15 text-[#8B5CF6]">
               <History className="w-5 h-5 text-[#00E5FF]" />
             </div>
             <h3 className="text-base font-extrabold text-white">Execution Audit Log & API History</h3>
@@ -50,7 +50,7 @@ export const MonitoringHistory: React.FC = () => {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-3.5 py-2 bg-[#0B0B0F] border border-white/10 rounded-xl text-white/80 focus:outline-none focus:border-[#8B5CF6]"
+            className="px-3.5 py-2 bg-[#0B0B0F]/70 border border-[#8B5CF6]/25 rounded-xl text-white/80 focus:outline-none focus:border-[#00E5FF] transition"
           >
             <option value="ALL">All Services</option>
             <option value="SEARCH">Search API</option>
@@ -60,7 +60,7 @@ export const MonitoringHistory: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl overflow-hidden shadow-2xl">
+      <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl overflow-hidden shadow-2xl">
         {executions.length === 0 ? (
           <div className="p-14 text-center text-xs text-white/40">
             {isLoading ? 'Loading execution logs...' : 'No executions recorded yet. Trigger tasks to generate logs.'}
@@ -68,7 +68,7 @@ export const MonitoringHistory: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#0B0B0F] border-b border-[#8B5CF6]/15 text-white/40 uppercase text-[10px] tracking-wider font-bold">
+              <thead className="bg-[#0B0B0F]/80 border-b border-[#8B5CF6]/20 text-white/40 uppercase text-[10px] tracking-wider font-bold">
                 <tr>
                   <th className="px-6 py-4">Timestamp</th>
                   <th className="px-6 py-4">Service</th>

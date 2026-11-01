@@ -66,10 +66,10 @@ export const ChangeDetection: React.FC<ChangeDetectionProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-[#8B5CF6]/10 text-[#8B5CF6]">
+            <div className="p-2 rounded-xl bg-[#8B5CF6]/15 text-[#8B5CF6]">
               <FileDiff className="w-5 h-5 text-[#00E5FF]" />
             </div>
             <h3 className="text-base font-extrabold text-white">Website Change Detection Engine</h3>
@@ -89,7 +89,7 @@ export const ChangeDetection: React.FC<ChangeDetectionProps> = ({
 
       {/* Diff Result Inspector if executed */}
       {diffResult && (
-        <div className="bg-[#0B0B0F] border border-[#8B5CF6]/20 rounded-2xl p-6 space-y-4">
+        <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl p-6 space-y-4 shadow-xl">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-extrabold text-white flex items-center gap-2">
               <History className="w-4 h-4 text-[#00E5FF]" /> Snapshot Comparison Telemetry
@@ -145,8 +145,8 @@ export const ChangeDetection: React.FC<ChangeDetectionProps> = ({
       )}
 
       {/* Tasks Table */}
-      <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl overflow-hidden shadow-2xl">
-        <div className="p-5 border-b border-[#8B5CF6]/15 flex items-center justify-between">
+      <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="p-5 border-b border-[#8B5CF6]/20 flex items-center justify-between">
           <h4 className="text-sm font-extrabold text-white">Active Change Detection Tasks ({changeTasks.length})</h4>
         </div>
 
@@ -157,7 +157,7 @@ export const ChangeDetection: React.FC<ChangeDetectionProps> = ({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#0B0B0F] border-b border-[#8B5CF6]/15 text-white/40 uppercase text-[10px] tracking-wider font-bold">
+              <thead className="bg-[#0B0B0F]/80 border-b border-[#8B5CF6]/20 text-white/40 uppercase text-[10px] tracking-wider font-bold">
                 <tr>
                   <th className="px-6 py-4">Task Name</th>
                   <th className="px-6 py-4">Target Webpage</th>

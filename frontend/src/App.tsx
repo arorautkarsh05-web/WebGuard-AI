@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
+import { BackgroundVideo } from './components/BackgroundVideo';
 import { AuthPage } from './pages/AuthPage';
 import { OverviewDashboard } from './pages/OverviewDashboard';
 import { WebsiteMonitoring } from './pages/WebsiteMonitoring';
@@ -8,6 +9,7 @@ import { FunctionalTesting } from './pages/FunctionalTesting';
 import { CompetitorIntelligence } from './pages/CompetitorIntelligence';
 import { ChangeDetection } from './pages/ChangeDetection';
 import { IncidentManagement } from './pages/IncidentManagement';
+import { ActionCenter } from './pages/ActionCenter';
 import { MonitoringHistory } from './pages/MonitoringHistory';
 import { SettingsPage } from './pages/SettingsPage';
 import { api, setUnauthorizedHandler } from './api/client';
@@ -160,6 +162,11 @@ export function App() {
           title: 'AI Incident Intelligence & Remediation',
           subtitle: 'Diagnose anomalies, classify severity, and review recommended action plans',
         };
+      case 'actions':
+        return {
+          title: 'AI Action Center & Verification Stream',
+          subtitle: 'Review proposed remediation actions, authorize safe executions, and inspect verification audit logs',
+        };
       case 'history':
         return {
           title: 'Audit Logs & API Executions',
@@ -181,7 +188,10 @@ export function App() {
   const pageInfo = getPageInfo();
 
   return (
-    <div className="min-h-screen bg-[#0B0B0F] text-white flex select-none">
+    <div className="min-h-screen bg-transparent text-white flex select-none relative">
+      {/* Dominant Background Animated Video Layer */}
+      <BackgroundVideo opacity={0.9} overlayOpacity={0.18} />
+
       {/* Sidebar Navigation */}
       <Sidebar
         currentTab={currentTab}
@@ -192,7 +202,7 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 ml-64 flex flex-col min-h-screen">
+      <div className="flex-1 ml-64 flex flex-col min-h-screen relative z-10">
         <Header
           title={pageInfo.title}
           subtitle={pageInfo.subtitle}
@@ -246,6 +256,8 @@ export function App() {
               onRefresh={fetchAllData}
             />
           )}
+
+          {currentTab === 'actions' && <ActionCenter />}
 
           {currentTab === 'history' && <MonitoringHistory />}
 

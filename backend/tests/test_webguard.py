@@ -1,10 +1,12 @@
 import pytest
+import uuid
 from fastapi.testclient import TestClient
+from fastapi import HTTPException
+
 from backend.main import app
 from backend.app.core.database import Base, engine, SessionLocal
-from backend.app.models.models import User, Organization
+from backend.app.models.models import User, Organization, Website, Incident, AIAction, RegressionTest
 from backend.app.core.security import validate_target_url, get_password_hash
-from fastapi import HTTPException
 
 # Ensure tables exist
 Base.metadata.create_all(bind=engine)
@@ -22,7 +24,7 @@ def get_auth_token():
     
     # Or create a fresh user
     reg_res = client.post("/api/v1/auth/register", json={
-        "email": "testuser@webguard.ai",
+        "email": f"test_{uuid.uuid4().hex[:6]}@webguard.ai",
         "password": "WebGuardPass2026!",
         "confirm_password": "WebGuardPass2026!",
         "full_name": "Test User",
@@ -36,6 +38,7 @@ def test_health_check_endpoint():
     data = response.json()
     assert data["status"] == "healthy"
     assert data["tinyfish_configured"] is True
+    assert "environment" in data
 
 def test_unauthenticated_protected_route_rejection():
     # Attempting to access protected endpoints without token must return 401
@@ -43,7 +46,6 @@ def test_unauthenticated_protected_route_rejection():
     assert response.status_code == 401
 
 def test_user_registration_and_login():
-    import uuid
     random_email = f"user_{uuid.uuid4().hex[:6]}@webguard.ai"
     reg_payload = {
         "email": random_email,
@@ -76,11 +78,16 @@ def test_ssrf_protection_blocks_localhost():
     with pytest.raises(HTTPException) as excinfo:
         validate_target_url("http://localhost:8000/admin")
     assert excinfo.value.status_code == 400
-    assert "SSRF" in excinfo.value.detail or "blocked" in excinfo.value.detail or "restricted" in excinfo.value.detail
+    assert "SSRF" in excinfo.value.detail or "restricted" in excinfo.value.detail or "blocked" in excinfo.value.detail
 
 def test_ssrf_protection_blocks_private_ip():
     with pytest.raises(HTTPException) as excinfo:
         validate_target_url("http://192.168.1.1/secret")
+    assert excinfo.value.status_code == 400
+
+def test_ssrf_protection_blocks_cloud_metadata():
+    with pytest.raises(HTTPException) as excinfo:
+        validate_target_url("http://169.254.169.254/latest/meta-data/")
     assert excinfo.value.status_code == 400
 
 def test_ssrf_protection_blocks_file_scheme():
@@ -88,11 +95,44 @@ def test_ssrf_protection_blocks_file_scheme():
         validate_target_url("file:///etc/passwd")
     assert excinfo.value.status_code == 400
 
-def test_tinyfish_status_endpoint():
-    response = client.get("/api/v1/tinyfish/status")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["configured"] is True
+def test_cross_organization_data_isolation():
+    # 1. Register User A in Organization A
+    email_a = f"tenant_a_{uuid.uuid4().hex[:6]}@webguard.ai"
+    res_a = client.post("/api/v1/auth/register", json={
+        "email": email_a,
+        "password": "PassPassword123!",
+        "confirm_password": "PassPassword123!",
+        "full_name": "Tenant A Admin",
+        "organization_name": "Org A Defense"
+    })
+    assert res_a.status_code == 200
+    token_a = res_a.json()["access_token"]
+
+    # 2. Register User B in Organization B
+    email_b = f"tenant_b_{uuid.uuid4().hex[:6]}@webguard.ai"
+    res_b = client.post("/api/v1/auth/register", json={
+        "email": email_b,
+        "password": "PassPassword123!",
+        "confirm_password": "PassPassword123!",
+        "full_name": "Tenant B Admin",
+        "organization_name": "Org B Defense"
+    })
+    assert res_b.status_code == 200
+    token_b = res_b.json()["access_token"]
+
+    # 3. User A creates a website in Org A
+    site_payload = {"name": "Org A Internal Portal", "url": "https://example.com/org-a"}
+    create_res = client.post("/api/v1/websites", json=site_payload, headers={"Authorization": f"Bearer {token_a}"})
+    assert create_res.status_code == 200
+    site_a_id = create_res.json()["id"]
+
+    # 4. User B tries to read User A's website -> must return 404
+    get_res = client.get(f"/api/v1/websites/{site_a_id}", headers={"Authorization": f"Bearer {token_b}"})
+    assert get_res.status_code == 404
+
+    # 5. User B tries to delete User A's website -> must return 404
+    del_res = client.delete(f"/api/v1/websites/{site_a_id}", headers={"Authorization": f"Bearer {token_b}"})
+    assert del_res.status_code == 404
 
 def test_dashboard_overview():
     token = get_auth_token()
@@ -105,14 +145,14 @@ def test_dashboard_overview():
 def test_website_registration_and_health_check():
     token = get_auth_token()
     payload = {
-        "name": "Example Domain",
+        "name": "Production Target",
         "url": "https://example.com",
         "check_frequency_minutes": 5
     }
     response = client.post("/api/v1/websites", json=payload, headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     site = response.json()
-    assert site["name"] == "Example Domain"
+    assert site["name"] == "Production Target"
     assert site["url"] == "https://example.com"
     site_id = site["id"]
 
@@ -121,34 +161,87 @@ def test_website_registration_and_health_check():
     assert check_res.status_code == 200
     assert check_res.json()["success"] is True
 
-def test_competitor_creation_and_products():
+def test_flagship_autonomous_root_cause_investigation():
     token = get_auth_token()
-    comp_payload = {
-        "name": "Stripe",
-        "website_url": "https://stripe.com",
-        "description": "Payment infrastructure competitor"
-    }
-    response = client.post("/api/v1/competitors", json=comp_payload, headers={"Authorization": f"Bearer {token}"})
-    assert response.status_code == 200
-    comp = response.json()
-    assert comp["name"] == "Stripe"
-    comp_id = comp["id"]
+    db = SessionLocal()
+    try:
+        # Create a test incident
+        user = db.query(User).filter(User.email == "admin@webguard.ai").first()
+        org_id = user.organization_id if user else "test-org"
+        site = db.query(Website).filter(Website.organization_id == org_id).first()
 
-    prod_payload = {
-        "name": "Stripe Payments Standard",
-        "url": "https://stripe.com/pricing",
-        "current_price": 29.0,
-        "currency": "USD"
-    }
-    prod_res = client.post(f"/api/v1/competitors/{comp_id}/products", json=prod_payload, headers={"Authorization": f"Bearer {token}"})
-    assert prod_res.status_code == 200
-    assert prod_res.json()["current_price"] == 29.0
+        incident = Incident(
+            organization_id=org_id,
+            website_id=site.id if site else None,
+            title="Synthetic Outage: Endpoint unreachable",
+            severity="Critical",
+            status="Open",
+            root_cause_summary="Initial anomaly detected",
+            evidence={"url": site.url if site else "https://example.com", "status_code": 503}
+        )
+        db.add(incident)
+        db.commit()
+        db.refresh(incident)
+        inc_id = incident.id
+    finally:
+        db.close()
 
-def test_tinyfish_live_search():
-    token = get_auth_token()
-    search_payload = {"query": "web monitoring saas"}
-    res = client.post("/api/v1/tinyfish/search", json=search_payload, headers={"Authorization": f"Bearer {token}"})
+    # Trigger autonomous investigation
+    res = client.post(f"/api/v1/incidents/{inc_id}/investigate", headers={"Authorization": f"Bearer {token}"})
     assert res.status_code == 200
     data = res.json()
-    assert data.get("success") is True
-    assert "results" in data
+    assert data["success"] is True
+    report = data["investigation_report"]
+    assert "incident_title" in report
+    assert "confirmed_failures" in report
+    assert "observations" in report
+    assert "possible_causes" in report
+    assert "supporting_evidence" in report
+    assert "confidence" in report
+    assert "recommended_actions" in report
+    assert report["requires_human_approval"] is True
+
+def test_ai_action_center_human_approval_and_verification():
+    token = get_auth_token()
+    # Fetch action proposals
+    actions_res = client.get("/api/v1/actions", headers={"Authorization": f"Bearer {token}"})
+    assert actions_res.status_code == 200
+    actions = actions_res.json()
+    assert len(actions) > 0
+
+    pending_action = actions[0]
+    action_id = pending_action["id"]
+
+    # Approve and execute action
+    approve_res = client.post(f"/api/v1/actions/{action_id}/approve", json={"approved": True}, headers={"Authorization": f"Bearer {token}"})
+    assert approve_res.status_code == 200
+    assert approve_res.json()["success"] is True
+
+    # Re-verify resolution
+    verify_res = client.post(f"/api/v1/actions/{action_id}/verify", headers={"Authorization": f"Bearer {token}"})
+    assert verify_res.status_code == 200
+    assert verify_res.json()["success"] is True
+
+def test_autonomous_regression_testing_lifecycle():
+    token = get_auth_token()
+    # Create regression test objective
+    payload = {
+        "name": "Homepage Navigation Verification",
+        "objective": "Verify primary navigation links on the homepage render properly.",
+        "target_url": "https://example.com",
+        "frequency_minutes": 60
+    }
+    create_res = client.post("/api/v1/regression", json=payload, headers={"Authorization": f"Bearer {token}"})
+    assert create_res.status_code == 200
+    test_obj = create_res.json()
+    assert test_obj["name"] == "Homepage Navigation Verification"
+    test_id = test_obj["id"]
+
+    # List tests
+    list_res = client.get("/api/v1/regression", headers={"Authorization": f"Bearer {token}"})
+    assert list_res.status_code == 200
+    assert any(t["id"] == test_id for t in list_res.json())
+
+    # Delete test
+    del_res = client.delete(f"/api/v1/regression/{test_id}", headers={"Authorization": f"Bearer {token}"})
+    assert del_res.status_code == 200

@@ -6,6 +6,7 @@ from backend.app.core.config import settings
 from backend.app.core.database import Base, engine, SessionLocal
 from backend.app.models.models import User, Organization
 from backend.app.core.security import get_password_hash
+from backend.app.services.scheduler import scheduler
 from backend.app.api.v1 import (
     auth,
     websites,
@@ -13,7 +14,9 @@ from backend.app.api.v1 import (
     competitors,
     incidents,
     dashboard,
-    tinyfish
+    tinyfish,
+    actions,
+    regression
 )
 
 @asynccontextmanager
@@ -22,29 +25,38 @@ async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
-        user = db.query(User).first()
-        if not user:
-            org = Organization(name="Acme Enterprise", plan="enterprise")
-            db.add(org)
-            db.commit()
-            db.refresh(org)
+        # Security hardening: Only provision demo admin in development/testing mode
+        if settings.ENVIRONMENT != "production":
+            user = db.query(User).first()
+            if not user:
+                org = Organization(name="Acme Enterprise", plan="enterprise")
+                db.add(org)
+                db.commit()
+                db.refresh(org)
 
-            admin_user = User(
-                organization_id=org.id,
-                email="admin@webguard.ai",
-                hashed_password=get_password_hash("WebGuardPass2026!"),
-                full_name="Security Admin",
-                role="admin",
-                is_active=True
-            )
-            db.add(admin_user)
-            db.commit()
-            print("[WebGuard AI] Default administrator account provisioned: admin@webguard.ai")
+                admin_pw = settings.DEFAULT_ADMIN_PASSWORD or "WebGuardPass2026!"
+                admin_user = User(
+                    organization_id=org.id,
+                    email=settings.DEFAULT_ADMIN_EMAIL or "admin@webguard.ai",
+                    hashed_password=get_password_hash(admin_pw),
+                    full_name="Security Admin",
+                    role="admin",
+                    is_active=True
+                )
+                db.add(admin_user)
+                db.commit()
+                print(f"[WebGuard AI] Development admin provisioned: {admin_user.email}")
     finally:
         db.close()
 
-    print(f"[WebGuard AI] Database initialized successfully.")
+    # Start autonomous background monitoring scheduler
+    scheduler.start()
+    print(f"[WebGuard AI] Environment: {settings.ENVIRONMENT} | API v{settings.VERSION} ready.")
+
     yield
+
+    # Clean shutdown of background worker
+    await scheduler.stop()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -55,12 +67,12 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configure CORS
+# Configure Production-Ready CORS with trusted origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.BACKEND_CORS_ORIGINS if settings.ENVIRONMENT == "production" else ["*"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -70,6 +82,8 @@ app.include_router(websites.router, prefix=f"{settings.API_V1_STR}/websites", ta
 app.include_router(monitoring.router, prefix=f"{settings.API_V1_STR}/monitoring", tags=["Monitoring Tasks"])
 app.include_router(competitors.router, prefix=f"{settings.API_V1_STR}/competitors", tags=["Competitor Intelligence"])
 app.include_router(incidents.router, prefix=f"{settings.API_V1_STR}/incidents", tags=["Incidents"])
+app.include_router(actions.router, prefix=f"{settings.API_V1_STR}/actions", tags=["AI Action Center"])
+app.include_router(regression.router, prefix=f"{settings.API_V1_STR}/regression", tags=["Autonomous Regression Testing"])
 app.include_router(dashboard.router, prefix=f"{settings.API_V1_STR}/dashboard", tags=["Dashboard"])
 app.include_router(tinyfish.router, prefix=f"{settings.API_V1_STR}/tinyfish", tags=["TinyFish Integration"])
 
@@ -79,6 +93,7 @@ def health_check():
         "status": "healthy",
         "service": settings.PROJECT_NAME,
         "version": settings.VERSION,
+        "environment": settings.ENVIRONMENT,
         "tinyfish_configured": bool(settings.TINYFISH_API_KEY and len(settings.TINYFISH_API_KEY) > 10)
     }
 

@@ -138,7 +138,7 @@ export const WebsiteMonitoring: React.FC<WebsiteMonitoringProps> = ({
 
       {/* Website Table */}
       {websites.length === 0 ? (
-        <div className="p-14 text-center bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl">
+        <div className="p-14 text-center bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl shadow-xl">
           <Globe className="w-12 h-12 text-[#8B5CF6]/40 mx-auto mb-3" />
           <h4 className="text-sm font-bold text-white">No Monitored Websites Yet</h4>
           <p className="text-xs text-white/40 mt-1 max-w-sm mx-auto">
@@ -152,10 +152,10 @@ export const WebsiteMonitoring: React.FC<WebsiteMonitoringProps> = ({
           </button>
         </div>
       ) : (
-        <div className="bg-[#0B0B0F] border border-[#8B5CF6]/15 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="bg-[#0B0B0F]/70 backdrop-blur-md border border-[#8B5CF6]/20 rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#0B0B0F] border-b border-[#8B5CF6]/15 text-white/40 uppercase text-[10px] tracking-wider font-bold">
+              <thead className="bg-[#0B0B0F]/80 border-b border-[#8B5CF6]/20 text-white/40 uppercase text-[10px] tracking-wider font-bold">
                 <tr>
                   <th className="px-6 py-4">Target Name & URL</th>
                   <th className="px-6 py-4">Health Status</th>
@@ -244,8 +244,8 @@ export const WebsiteMonitoring: React.FC<WebsiteMonitoringProps> = ({
 
       {/* Register Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#0B0B0F] border border-[#8B5CF6]/30 rounded-2xl w-full max-w-md p-7 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
+          <div className="bg-[#0B0B0F]/90 backdrop-blur-xl border border-[#8B5CF6]/30 rounded-2xl w-full max-w-md p-7 shadow-2xl relative">
             <h3 className="text-base font-extrabold text-white mb-1">Register Monitored Website</h3>
             <p className="text-xs text-white/50 mb-5">
               Enter target details. SSRF filter will prevent loopback and private IP access.
@@ -266,7 +266,7 @@ export const WebsiteMonitoring: React.FC<WebsiteMonitoringProps> = ({
                   placeholder="e.g. Production Application"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-[#0B0B0F] border border-white/10 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#8B5CF6]"
+                  className="w-full px-3.5 py-2.5 bg-[#0B0B0F]/70 border border-[#8B5CF6]/25 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#00E5FF] transition"
                 />
               </div>
 
@@ -278,7 +278,7 @@ export const WebsiteMonitoring: React.FC<WebsiteMonitoringProps> = ({
                   placeholder="https://example.com"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-[#0B0B0F] border border-white/10 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#8B5CF6]"
+                  className="w-full px-3.5 py-2.5 bg-[#0B0B0F]/70 border border-[#8B5CF6]/25 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#00E5FF] transition"
                 />
                 <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-[#00E5FF]">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#00E5FF]" />
@@ -291,7 +291,7 @@ export const WebsiteMonitoring: React.FC<WebsiteMonitoringProps> = ({
                 <select
                   value={frequency}
                   onChange={(e) => setFrequency(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 bg-[#0B0B0F] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#8B5CF6]"
+                  className="w-full px-3.5 py-2.5 bg-[#0B0B0F]/70 border border-[#8B5CF6]/25 rounded-xl text-xs text-white focus:outline-none focus:border-[#00E5FF] transition"
                 >
                   <option value={1}>Every 1 Minute (High Precision)</option>
                   <option value={5}>Every 5 Minutes (Standard)</option>

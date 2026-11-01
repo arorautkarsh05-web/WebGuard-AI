@@ -231,3 +231,80 @@ class DashboardActivityItem(BaseModel):
     severity: Optional[str] = None
     timestamp: datetime
 
+# --- Autonomous Investigation & Root Cause ---
+class InvestigationReport(BaseModel):
+    incident_title: str
+    severity: str
+    observations: List[str] = []
+    confirmed_failures: List[str] = []
+    possible_causes: List[str] = []
+    supporting_evidence: List[Dict[str, Any]] = []
+    confidence: float = 0.0
+    recommended_actions: List[str] = []
+    requires_human_approval: bool = True
+
+# --- AI Action Center & Audit Log ---
+class AIActionCreate(BaseModel):
+    action_type: str
+    title: str
+    description: str
+    incident_id: Optional[str] = None
+    risk_level: Optional[str] = "LOW"
+    parameters: Optional[Dict[str, Any]] = None
+
+class AIActionApproval(BaseModel):
+    approved: bool
+    notes: Optional[str] = None
+
+class AIActionOut(BaseModel):
+    id: str
+    organization_id: str
+    incident_id: Optional[str] = None
+    user_id: Optional[str] = None
+    action_type: str
+    title: str
+    description: str
+    risk_level: Optional[str] = "LOW"
+    parameters: Optional[Dict[str, Any]] = None
+    approval_status: str
+    execution_status: str
+    execution_result: Optional[Dict[str, Any]] = None
+    verification_status: str
+    verification_details: Optional[Dict[str, Any]] = None
+    created_at: datetime
+    approved_at: Optional[datetime] = None
+    executed_at: Optional[datetime] = None
+    verified_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+# --- Autonomous Regression Testing ---
+class RegressionTestCreate(BaseModel):
+    website_id: Optional[str] = None
+    name: str
+    objective: str
+    target_url: str
+    frequency_minutes: Optional[int] = 60
+
+class RegressionTestOut(BaseModel):
+    id: str
+    organization_id: str
+    website_id: Optional[str] = None
+    name: str
+    objective: str
+    target_url: str
+    frequency_minutes: int
+    status: str
+    last_run_status: str
+    last_run_at: Optional[datetime] = None
+    last_duration_ms: Optional[float] = None
+    failed_step: Optional[str] = None
+    evidence: Optional[Dict[str, Any]] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
