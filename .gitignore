@@ -1,0 +1,15 @@
+.env
+*.env
+backend/.env
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+node_modules/
+dist/
+build/
+.DS_Store
+*.db
+webguard.db
+*.log
