@@ -28,29 +28,47 @@ if db_url.startswith("sqlite"):
     event.listen(engine, "connect", set_sqlite_pragma)
 else:
     # Production PostgreSQL with robust connection pooling
-    try:
-        engine = create_engine(
-            db_url,
-            pool_size=10,
-            max_overflow=20,
-            pool_pre_ping=True,
-            pool_recycle=300,
-            connect_args={"connect_timeout": 3}
-        )
-        # Test connection
-        with engine.connect() as conn:
-            pass
-    except Exception as e:
-        if settings.ENVIRONMENT == "production":
-            # Never silently switch in production!
-            print(f"[CRITICAL ERROR] Failed to connect to production database: {db_url}", file=sys.stderr)
-            raise RuntimeError(f"FATAL: Production database connection failed: {e}")
-        else:
-            # Informative local development fallback
-            fallback_url = "sqlite:///./webguard.db"
-            print(f"[Database Notice] Could not connect to PostgreSQL ({e}). Using local SQLite for development: {fallback_url}")
-            engine = create_engine(fallback_url, connect_args={"check_same_thread": False, "timeout": 30.0})
-            event.listen(engine, "connect", set_sqlite_pragma)
+    should_attempt = True
+    if settings.ENVIRONMENT != "production":
+        try:
+            from urllib.parse import urlparse
+            import socket
+            parsed = urlparse(db_url)
+            host = parsed.hostname or "localhost"
+            port = parsed.port or 5432
+            s = socket.create_connection((host, port), timeout=0.5)
+            s.close()
+        except Exception:
+            should_attempt = False
+
+    if should_attempt:
+        try:
+            engine = create_engine(
+                db_url,
+                pool_size=10,
+                max_overflow=20,
+                pool_pre_ping=True,
+                pool_recycle=300,
+                connect_args={"connect_timeout": 3}
+            )
+            # Test connection
+            with engine.connect() as conn:
+                pass
+        except Exception as e:
+            if settings.ENVIRONMENT == "production":
+                # Never silently switch in production!
+                print(f"[CRITICAL ERROR] Failed to connect to production database: {db_url}", file=sys.stderr)
+                raise RuntimeError(f"FATAL: Production database connection failed: {e}")
+            else:
+                fallback_url = "sqlite:///./webguard.db"
+                print(f"[Database Notice] Could not connect to PostgreSQL ({e}). Using local SQLite for development: {fallback_url}")
+                engine = create_engine(fallback_url, connect_args={"check_same_thread": False, "timeout": 30.0})
+                event.listen(engine, "connect", set_sqlite_pragma)
+    else:
+        fallback_url = "sqlite:///./webguard.db"
+        print(f"[Database Notice] Local PostgreSQL port is unreachable. Using local SQLite for instant development startup: {fallback_url}")
+        engine = create_engine(fallback_url, connect_args={"check_same_thread": False, "timeout": 30.0})
+        event.listen(engine, "connect", set_sqlite_pragma)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
