@@ -9,28 +9,38 @@ WebGuard AI is an intelligent website monitoring and competitive intelligence Sa
 ## 🚀 Key Features & Core Modules
 
 ### 1. Website Health Monitoring Fleet
+<img width="1892" height="893" alt="image" src="https://github.com/user-attachments/assets/33976284-39a1-4196-815a-0646b14a2684" />
+
 - Continuous HTTP availability monitoring with roundtrip latency (ms) benchmarking.
 - HTTP status code inspection and redirect chain validation.
 - Uptime calculations and status classifications (`healthy`, `degraded`, `down`).
 - **SSRF Protection:** Built-in network isolation restricting access to loopback (`127.0.0.1`), private RFC1918 subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), and cloud metadata (`169.254.169.254`).
 
 ### 2. Autonomous Functional Testing Agent (TinyFish Agent)
+<img width="1902" height="887" alt="image" src="https://github.com/user-attachments/assets/3c7318cf-c8e6-4c22-921c-2ef3296db4a7" />
+
 - Headless browser automation powered by **TinyFish Agent API**.
 - Executes goal-based functional smoke tests (e.g., Homepage hero verification, navigation & submenu audits, lead/signup forms, add-to-cart funnel tests).
 - **Safety Policy:** Non-destructive automation with strict stopping guardrails prior to payment steps or irreversible transactions.
 
 ### 3. Competitor Intelligence & Price Surveillance (TinyFish Search & Fetch)
+<img width="1907" height="896" alt="image" src="https://github.com/user-attachments/assets/03d780a8-cfa5-4f45-8d1b-36a1d2d19667" />
+
 - Automated competitor website surveillance and pricing extraction.
 - **AI Competitor Discovery:** Leverage **TinyFish Search** to discover market alternatives and competing domains.
 - Automated extraction of product price points, promotional discounts, and availability statuses.
 - Historical price comparison charts and alerts when competitors discount rates (>10%).
 
 ### 4. Website Change Detection & Diff Viewer (TinyFish Fetch)
+<img width="1907" height="900" alt="image" src="https://github.com/user-attachments/assets/9259563f-18ad-48d3-85b5-b87c78456f5e" />
+
 - Webpage snapshots powered by **TinyFish Fetch**.
 - Cryptographic SHA-256 baseline hashing and unified line-by-line diff generation.
 - Classification engine distinguishing pricing modifications, error content introduction, and copy updates.
 
 ### 5. AI Incident Intelligence & Triage
+<img width="1902" height="907" alt="image" src="https://github.com/user-attachments/assets/83f416da-a135-4795-8ce4-33908a67649b" />
+
 - Automated anomaly correlation and severity scoring (`Critical`, `High`, `Medium`, `Low`, `Informational`).
 - Distinguishes **confirmed observations** from **potential explanations**.
 - Generates recommended corrective action plans with evidence extraction.
